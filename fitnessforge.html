@@ -161,23 +161,39 @@
       }
     }
 
-    function chatWithAI() {
-      const input = document.getElementById("chatInput").value.toLowerCase();
-      const output = document.getElementById("chatOutput");
-      let response = "Let me think...";
+   async function chatWithAI() {
+      const input = document.getElementById("chatInput").value;
+    const output = document.getElementById("chatOutput");
 
-      if (input.includes("diet")) {
-        response = "Focus on whole foods: lean protein, veggies, healthy fats, and water.";
-      } else if (input.includes("cardio")) {
-        response = "Try brisk walking, cycling, or jump rope for 20–30 minutes.";
-      } else if (input.includes("protein")) {
-        response = "Eggs, chicken breast, lentils, and whey protein are great sources.";
-      } else {
-        response = "Try to be more specific. I'm still learning!";
-      }
-
-      output.innerHTML = response;
+    if (!input) {
+      output.innerText = "Please enter a question.";
+      return;
     }
+
+    output.innerText = "Thinking...";
+
+    try {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer YOUR_OPENAI_API_KEY_HERE"
+        },
+        body: JSON.stringify({
+          model: "gpt-3.5-turbo",
+          messages: [{ role: "user", content: input }],
+          temperature: 0.7
+        })
+      });
+
+      const data = await response.json();
+      const reply = data.choices?.[0]?.message?.content;
+      output.innerText = reply || "No response.";
+    } catch (err) {
+      output.innerText = "Error fetching reply.";
+      console.error(err);
+    }
+  }
   </script>
 
 </body>
