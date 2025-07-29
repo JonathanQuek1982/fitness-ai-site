@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI Health & Fitness Coach</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7f9;
+      margin: 0;
+      padding: 20px;
+    }
+    header {
+      text-align: center;
+      background-color: #0f8b8d;
+      color: white;
+      padding: 20px 0;
+      border-radius: 10px;
+    }
+    .container {
+      max-width: 700px;
+      margin: 20px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #ccc;
+    }
+    input, button, textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+    button {
+      background-color: #0f8b8d;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0c6d6f;
+    }
+    .response, .bmi-result, .chat-output, .stored-plan {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #e0f7f7;
+      border-left: 5px solid #0f8b8d;
+    }
+    @media(max-width: 600px) {
+      .container { padding: 15px; }
+      input, button, textarea { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>AI Health & Fitness Coach</h1>
+    <p>Smart tools for your health goals</p>
+  </header>
+
+  <div class="container">
+
+    <!-- Email Collection -->
+    <h3>Sign Up for Free Plans</h3>
+    <input type="email" id="email" placeholder="Enter your email">
+    <button onclick="saveEmail()">Subscribe</button>
+
+    <!-- Fitness Goal AI -->
+    <h3>Your Fitness Goal</h3>
+    <input type="text" id="goal" placeholder="e.g., lose weight, gain muscle">
+    <button onclick="generatePlan()">Generate Plan</button>
+    <div id="output" class="response" style="display:none;"></div>
+
+    <!-- BMI Calculator -->
+    <h3>Check Your BMI</h3>
+    <input type="number" id="weight" placeholder="Weight in kg">
+    <input type="number" id="height" placeholder="Height in cm">
+    <button onclick="calculateBMI()">Calculate BMI</button>
+    <div class="bmi-result" id="bmiOutput"></div>
+
+    <!-- Simulated AI Chat -->
+    <h3>Ask AI a Question</h3>
+    <textarea id="chatInput" rows="2" placeholder="e.g., What's a good diet plan?"></textarea>
+    <button onclick="chatWithAI()">Ask</button>
+    <div class="chat-output" id="chatOutput"></div>
+
+    <!-- Stored Plan -->
+    <h3>Your Saved Plan</h3>
+    <button onclick="loadPlan()">Load My Plan</button>
+    <div class="stored-plan" id="savedPlan"></div>
+
+  </div>
+
+  <script>
+    function saveEmail() {
+      const email = document.getElementById("email").value;
+      if (email && email.includes("@")) {
+        localStorage.setItem("userEmail", email);
+        alert("Thanks! You'll receive updates.");
+      } else {
+        alert("Please enter a valid email.");
+      }
+    }
+
+    function generatePlan() {
+      const goal = document.getElementById("goal").value.toLowerCase().trim();
+      const output = document.getElementById("output");
+      let response = "";
+
+      if (goal.includes("lose weight")) {
+        response = `
+          <strong>Workout:</strong> 30 mins cardio + bodyweight HIIT<br>
+          <strong>Nutrition:</strong> Calorie deficit, high protein<br>
+          <strong>Tip:</strong> Avoid sugary drinks and processed carbs.
+        `;
+      } else if (goal.includes("gain muscle")) {
+        response = `
+          <strong>Workout:</strong> Strength training 4x/week<br>
+          <strong>Nutrition:</strong> Calorie surplus, protein-rich meals<br>
+          <strong>Tip:</strong> Prioritize compound lifts.
+        `;
+      } else if (goal.includes("fit")) {
+        response = `
+          <strong>Workout:</strong> Balanced cardio + strength<br>
+          <strong>Nutrition:</strong> Eat clean, hydrate<br>
+          <strong>Tip:</strong> Stay consistent, even 20 min/day helps.
+        `;
+      } else {
+        response = "Please enter a clear goal like 'lose weight' or 'gain muscle'.";
+      }
+
+      localStorage.setItem("fitnessPlan", response);
+      output.innerHTML = response;
+      output.style.display = "block";
+    }
+
+    function loadPlan() {
+      const plan = localStorage.getItem("fitnessPlan");
+      document.getElementById("savedPlan").innerHTML = plan ? plan : "No plan saved yet.";
+    }
+
+    function calculateBMI() {
+      const weight = parseFloat(document.getElementById("weight").value);
+      const height = parseFloat(document.getElementById("height").value);
+      const output = document.getElementById("bmiOutput");
+
+      if (weight > 0 && height > 0) {
+        const bmi = weight / ((height / 100) ** 2);
+        let status = "";
+
+        if (bmi < 18.5) status = "Underweight";
+        else if (bmi < 25) status = "Normal";
+        else if (bmi < 30) status = "Overweight";
+        else status = "Obese";
+
+        output.innerHTML = `Your BMI is <strong>${bmi.toFixed(1)}</strong> (${status})`;
+      } else {
+        output.innerHTML = "Enter valid weight and height.";
+      }
+    }
+
+    function chatWithAI() {
+      const input = document.getElementById("chatInput").value.toLowerCase();
+      const output = document.getElementById("chatOutput");
+      let response = "Let me think...";
+
+      if (input.includes("diet")) {
+        response = "Focus on whole foods: lean protein, veggies, healthy fats, and water.";
+      } else if (input.includes("cardio")) {
+        response = "Try brisk walking, cycling, or jump rope for 20–30 minutes.";
+      } else if (input.includes("protein")) {
+        response = "Eggs, chicken breast, lentils, and whey protein are great sources.";
+      } else {
+        response = "Try to be more specific. I'm still learning!";
+      }
+
+      output.innerHTML = response;
+    }
+  </script>
+
+</body>
+</html>
